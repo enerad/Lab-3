@@ -45,11 +45,12 @@ int main(void)
 	char s[INET6_ADDRSTRLEN];
 	int rv;
 
-	memset(&hints, 0, sizeof hints);
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
+	memset(&hints, 0, sizeof hints); //make sure the struct is empty
+	hints.ai_family = AF_UNSPEC; // dont care IPv4 or IPv6
+	hints.ai_socktype = SOCK_STREAM; // TCP stream sockets
 	hints.ai_flags = AI_PASSIVE; // use my IP
 
+	// servinfo now points to a linked list of 1 or more struct addrinfos
 	if ((rv = getaddrinfo(NULL, PORT, &hints, &servinfo)) != 0) {
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
 		return 1;
