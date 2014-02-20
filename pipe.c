@@ -16,7 +16,7 @@ char *data = "Some input data\n";
 main() 
 { 
   int in[2], out[2], n, pid;
-  char buf[255]; 
+  char buf[2550];
 
   /* Creating two pipes: 'in' and 'out' */ 
   /* In a pipe, xx[0] is for reading, xx[1] is for writing */ 
@@ -51,8 +51,8 @@ main()
      * symbol -- a NULL pointer -- to indicate the end of the arguments.
      * In general, execl accepts an arbitrary number of arguments.
      */
-    execl("/usr/bin/hexdump", "hexdump", "-C", (char *)NULL); 
-   // execl("/usr/bin/ls", "ls", "-l", (char *)NULL);
+   // execl("/usr/bin/hexdump", "hexdump", "-C", (char *)NULL); 
+    execl("/usr/bin/ls", "ls", "-l", (char *)NULL);
 
     /* If hexdump wasn't executed then we would still have the following
      * function, which would indicate an error 
@@ -90,7 +90,7 @@ main()
   close(in[1]); 
  
   /* Read back any output */ 
-  n = read(out[0], buf, 250); 
+  n = read(out[0], buf, 2500); 
   buf[n] = 0; 
 //  printf("-> %s",buf);  Galen replaced this line with the following
   printf("This was received by the child: %s",buf); 
