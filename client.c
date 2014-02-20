@@ -77,18 +77,23 @@ int main(int argc, char *argv[])
 	printf("client: connecting to %s\n", s);
 
 	freeaddrinfo(servinfo); // all done with this structure
-
-	if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
-	    perror("recv");
-	    exit(1);
+	
+	// additions here
+	while(1)
+	{	char cmd; // variable for commands
+		if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
+			perror("recv");
+			exit(1);
+		}
+		buf[numbytes] = '\0';
+		printf(" '%s' \n", buf); // server opening message
+		memset(buf,0,sizeof buf); // set buf to 0
+		scanf("%c", &cmd); // scan for command: l for list, c for check, g for get
+		// sending command to server
+		if(cmd == 'l')
+			send(sockfd,"list",20,0);
 	}
-
-	buf[numbytes] = '\0';
-
-	printf("client: received '%s'\n",buf);
-
 	close(sockfd);
-
 	return 0;
 }
 

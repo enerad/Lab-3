@@ -122,9 +122,69 @@ int main(void)
 			close(new_fd);
 			exit(0);
 			*/
-			int len = strlen( execl("/usr/bin/ls", "ls", "-l", (char *)NULL) );
-			if (send(new_fd, "execl("/usr/bin/ls", "ls", "-l", (char *)NULL)", len, 0) == -1)
+			
+			// this is where we add stuff
+			
+			// pipe variables
+			int in[2], out[2], n, pid;
+			char buf[1000];
+			int buff[1000];
+			int numbytes;
+			char listcompare[10] = "list";
+			char checkcompare[10] = "check";
+			char getcompare[10] = "get";
+			/* Creating two pipes: 'in' and 'out' */ 
+			/* In a pipe, xx[0] is for reading, xx[1] is for writing */ 
+			if (pipe(in) < 0) error("pipe in");  
+			if (pipe(out) < 0) error("pipe out");
+			
+			// request command text
+			commandrecieve:
+			if (send(new_fd, "Type in your command (list, check, get):", 50, 0) == -1)
 				perror("send");
+			// recieve command code
+			numbytes = recv(new_fd, buf, 99, 0);
+			buf[numbytes] = '\0';
+			printf("You entered: '%s' \n", buf);
+			
+			// now we want to check what command we received
+			commandcheck:
+			if (strcmp(listcompare,buf) == 0) // code for list
+			{	if(!fork()) // this is a child's child process
+				{	// close stdin, stdout, stderr
+					close(0);
+					close(1);
+					close(2);
+					// make our pipes our new stdin,stdout,stderr
+					dup2(in[0],0);
+					dup2(out[1],1);
+					dup2(out[1],2);
+					// close the other ends of the pipes that the parent will use
+					close(in[1]);
+					close(out[0]);
+					
+					execl("/usr/bin/ls", "ls",(char *)NULL); // runs ls
+					printf("Could not execl ls"); // will print if execl doesnt run
+				}
+				// child process
+				
+				// close the pipe ends that the child uses
+				close(in[0]);
+				close(out[1]);
+				
+				// code to output execl
+				close(in[1]);
+				n = read(out[0], buff, 1000);
+				buff[n] = '\0'; // reset buff
+				printf("This was recieved by the child: %s", buff);
+				send(new_fd,buff,1000,0);
+				goto commandrecieve;
+			}
+			else
+			{	printf("command not understood");
+				goto commandrecieve;
+			}
+
 			close(new_fd);
 			exit(0);
 		}

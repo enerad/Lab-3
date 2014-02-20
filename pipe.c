@@ -16,7 +16,7 @@ char *data = "Some input data\n";
 main() 
 { 
   int in[2], out[2], n, pid;
-  char buf[2550];
+  char buf[255]; 
 
   /* Creating two pipes: 'in' and 'out' */ 
   /* In a pipe, xx[0] is for reading, xx[1] is for writing */ 
@@ -90,7 +90,7 @@ main()
   close(in[1]); 
  
   /* Read back any output */ 
-  n = read(out[0], buf, 2500); 
+  n = read(out[0], buf, 250); 
   buf[n] = 0; 
 //  printf("-> %s",buf);  Galen replaced this line with the following
   printf("This was received by the child: %s",buf); 
