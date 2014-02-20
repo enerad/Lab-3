@@ -52,8 +52,9 @@ main()
      * In general, execl accepts an arbitrary number of arguments.
      */
    // execl("/usr/bin/hexdump", "hexdump", "-C", (char *)NULL); 
-    execl("/usr/bin/ls", "ls", "-l", (char *)NULL);
-
+    //execl("/usr/bin/ls", "ls", "-l", (char *)NULL);
+    execl("/usr/bin/cat", "cat", "makefile", (char *)NULL);
+	
     /* If hexdump wasn't executed then we would still have the following
      * function, which would indicate an error 
      */

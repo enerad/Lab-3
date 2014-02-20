@@ -80,7 +80,8 @@ int main(int argc, char *argv[])
 	
 	// additions here
 	while(1)
-	{	char cmd; // variable for commands
+	{	//char cmd; // variable for commands
+		//char buf2[MAXDATASIZE]; // variable for command arguements
 		if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
 			perror("recv");
 			exit(1);
@@ -88,10 +89,29 @@ int main(int argc, char *argv[])
 		buf[numbytes] = '\0';
 		printf(" '%s' \n", buf); // server opening message
 		memset(buf,0,sizeof buf); // set buf to 0
-		scanf("%c", &cmd); // scan for command: l for list, c for check, g for get
+		//memset(buf2,0,sizeof buf2); // set buf2 to 0
+		//scanf("%s", buf); // scan for command: l for list, c for check, g for get
+		char *p;
+		char buffer[MAXDATASIZE];
+		fgets(buffer,sizeof(buffer),stdin);
+		if((p = strchr(buffer, '\n')) != NULL)
+			*p = '\0';
 		// sending command to server
-		if(cmd == 'l')
-			send(sockfd,"list",20,0);
+		// command for list
+		if(strcmp(buffer,"list") == 0)
+		{	send(sockfd,"list",20,0);
+			//recv(sockfd, buf, MAXDATASIZE-1, 0);
+		}
+
+		// want to check if get is typed
+		
+		if( strncmp("get", buffer, 3) == 0 ) // code for get
+		{	
+			send(sockfd, buffer,20,0);
+		}
+		
+		else
+			printf("did not understand command");
 	}
 	close(sockfd);
 	return 0;
