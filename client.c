@@ -127,12 +127,8 @@ int main(int argc, char *argv[])
 			// check for existence of file
 			// THIS IS NOT WORKING, IT DOES NOT LOOK IN THE CORRECT DIRECTORY?
 			// It instead checks the current directory the SSH terminal is in?
-			if ( access( d, F_OK ) == -1)
-			{	printf("file does not exist"); 
-				break;	// file does not exist, need to return and ask for another command
-			}
-			else // file exsists, we need to ask for an overwrite
-			{	
+			if ( access( d, F_OK ) == 1) // file exsists
+			{		
 				printf("do you want to overwrite? y/n \n");
 				scanf("%s", YesorNo);
 				if( YesorNo == "y" )
@@ -140,6 +136,8 @@ int main(int argc, char *argv[])
 				else
 					break; // request a new command here
 			}
+			else
+				send(sockfd, buffer,20,0);
 		}
 
 		else
