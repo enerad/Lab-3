@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
 	struct addrinfo hints, *servinfo, *p;
 	int rv;
 	char s[INET6_ADDRSTRLEN];
+	char YesorNo[3];
 
 	if (argc != 2) {
 	    fprintf(stderr,"usage: client hostname\n");
@@ -79,6 +80,7 @@ int main(int argc, char *argv[])
 	freeaddrinfo(servinfo); // all done with this structure
 	
 	// additions here
+	start:
 	while(1)
 	{	//char cmd; // variable for commands
 		//char buf2[MAXDATASIZE]; // variable for command arguements
@@ -112,10 +114,34 @@ int main(int argc, char *argv[])
 		
 		// want to check if download is typed
 		if( strncmp("download", buffer, 8) == 0 ) // code for get
-		{	
-			send(sockfd, buffer,20,0);
+		{	if( (strchr(buffer, '/')) != NULL)
+			{	printf("dont snoop with / \n");
+				goto start; // this needs to send back so that a command is asked for again
+			}
+			
+			printf("this is the command: %s\n",buffer);
+			char d[50];
+			sprintf(d,"%s",buffer+9);
+			printf("This is the shortened string: %s\n",d);
+			
+			// check for existence of file
+			// THIS IS NOT WORKING, IT DOES NOT LOOK IN THE CORRECT DIRECTORY?
+			// It instead checks the current directory the SSH terminal is in?
+			if ( access( d, F_OK ) == -1)
+			{	printf("file does not exist"); 
+				break;	// file does not exist, need to return and ask for another command
+			}
+			else // file exsists, we need to ask for an overwrite
+			{	
+				printf("do you want to overwrite? y/n \n");
+				scanf("%s", YesorNo);
+				if( YesorNo == "y" )
+					send(sockfd, buffer,20,0);
+				else
+					break; // request a new command here
+			}
 		}
-		
+
 		else
 			printf("did not understand command");
 	}

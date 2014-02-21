@@ -219,6 +219,13 @@ int main(void)
 				sprintf(d,"%s",buf+9);
 				printf("This is the shortened string: %s\n",d);
 				
+				// check for existence of file
+				if ( access( d, F_OK ) == -1)
+				{	printf("file does not exist"); 
+					break;	// file does not exist, need to return and ask for another command
+				}
+				// otherwise the file exists
+				
 				if(!fork()) // this is a child's child process
 				{
 				// close stdin, stdout, stderr
@@ -260,6 +267,8 @@ int main(void)
 			close(new_fd);
 			exit(0);
 		}
+		
+		
 		//close(new_fd);  // parent doesn't need this
 	}
 
