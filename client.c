@@ -16,7 +16,7 @@
 
 #define PORT "3510" // the port client will be connecting to 
 
-#define MAXDATASIZE 100 // max number of bytes we can get at once 
+#define MAXDATASIZE 10000 // max number of bytes we can get at once 
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -97,6 +97,7 @@ int main(int argc, char *argv[])
 		if((p = strchr(buffer, '\n')) != NULL)
 			*p = '\0';
 		// sending command to server
+		
 		// command for list
 		if(strcmp(buffer,"list") == 0)
 		{	send(sockfd,"list",20,0);
@@ -104,8 +105,13 @@ int main(int argc, char *argv[])
 		}
 
 		// want to check if get is typed
-		
 		if( strncmp("get", buffer, 3) == 0 ) // code for get
+		{	
+			send(sockfd, buffer,20,0);
+		}
+		
+		// want to check if download is typed
+		if( strncmp("download", buffer, 8) == 0 ) // code for get
 		{	
 			send(sockfd, buffer,20,0);
 		}

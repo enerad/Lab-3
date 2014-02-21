@@ -119,7 +119,7 @@ int main(void)
 			// pipe variables
 			int in[2], out[2], n, pid;
 			char buf[1000];
-			char buff[1000];
+			char buff[10000];
 			int numbytes;
 			char listcompare[10] = "list";
 			char checkcompare[10] = "check";
@@ -164,10 +164,10 @@ int main(void)
 				
 				// code to output execl
 				close(in[1]);
-				n = read(out[0], buff, 1000);
+				n = read(out[0], buff, 10000);
 				buff[n] = '\0'; // reset buff
 				printf("This was recieved by the child: %s", buff);
-				send(new_fd,buff,1000,0); // after this send it is waiting to receive?
+				send(new_fd,buff,10000,0); // after this send it is waiting to receive?
 				//printf("goto running");
 				//goto commandrecieve;
 			}
@@ -204,10 +204,50 @@ int main(void)
 				
 				// code to output execl
 				close(in[1]);
-				n = read(out[0], buff, 1000);
+				n = read(out[0], buff, 10000);
 				buff[n] = '\0'; // reset buff
 				printf("This was recieved by the child: %s", buff);
-				send(new_fd,buff,1000,0); // after this send it is waiting to receive?
+				send(new_fd,buff,10000,0); // after this send it is waiting to receive?
+				//printf("goto running");
+				//goto commandrecieve;
+			}
+			
+			if( strncmp("download", buf, 8) == 0) // code for download
+			{	
+				printf("this is the command: %s\n",buf);
+				char d[50];
+				sprintf(d,"%s",buf+9);
+				printf("This is the shortened string: %s\n",d);
+				
+				if(!fork()) // this is a child's child process
+				{
+				// close stdin, stdout, stderr
+					close(0);
+					close(1);
+					close(2);
+					// make our pipes our new stdin,stdout,stderr
+					dup2(in[0],0);
+					dup2(out[1],1);
+					dup2(out[1],2);
+					// close the other ends of the pipes that the parent will use
+					close(in[1]);
+					close(out[0]);
+					
+					execl("/usr/bin/scp", "enerad@wiliki.eng.hawaii.edu:/users8/students/enerad/EE367/lab3/EE367Lab3/", d, "/users8/students/enerad", (char *)NULL); // runs download
+					printf("Could not execl download"); // will print if execl doesnt run
+				}
+				// child process
+				
+				// close the pipe ends that the child uses
+				close(in[0]);
+				close(out[1]);
+				
+				// code to output execl
+				close(in[1]);
+				n = read(out[0], buff, 10000);
+				buff[n] = '\0'; // reset buff
+				printf("This was recieved by the child: %s", buff);
+				send(new_fd,buff,10000,0); // after this send it is waiting to receive?
 				//printf("goto running");
 				//goto commandrecieve;
 			}
